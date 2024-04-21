@@ -28,6 +28,7 @@ GAMEOVER = gameover_font.render("GAME OVER", True, (0, 0, 0))
 GAMEOVER_rect = GAMEOVER.get_rect()
 GAMEOVER_rect.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 RingFont = pygame.font.Font(os.path.join("assets", "ReFormation Sans Regular.ttf"), 32)
+MenuFont = pygame.font.Font(os.path.join("assets", "doom.ttf"), 64)
 
 TryAgain = gameover_font.render("Try Again?", True, (255, 255, 255))
 TryAgain_rect = TryAgain.get_rect()

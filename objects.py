@@ -1,4 +1,4 @@
-import pygame, os, math
+import pygame, os, math, time
 
 from constants import *
 from utils import Button
@@ -110,3 +110,85 @@ class Enemy(pygame.sprite.Sprite):
             self.death_sound.play()
             self.death_sound_played = True
         self.explosion_start_time = pygame.time.get_ticks()  # Record the start time of the explosion
+
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, start_x, start_y, speed, lifespan=5):
+        super().__init__()
+        # Load the laser image and create a rect around it
+        self.img = pygame.image.load(os.path.join("assets", "sprites", "Gamma", "laser1.png")).convert_alpha()
+        self.img_rect = self.img.get_rect()
+        self.image = pygame.transform.scale(self.img, (self.img_rect.width * 2, self.img_rect.height * 3))
+        self.rect = self.image.get_rect(center=(start_x, start_y))
+        self.speed = speed
+        self.start_time = time.time()  # Record the time when the laser is launched
+        self.lifespan = lifespan
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self):
+        # Move the laser horizontally by adding the speed to the X position
+        self.rect.x -= self.speed
+        # Check if the laser's lifespan (5 seconds) has passed
+        if time.time() - self.start_time >= self.lifespan:
+            self.kill()  # Remove the laser from the sprite group if its lifespan has passed
+
+class HealthBar:
+    def __init__(self, boss, screen):
+        self.boss = boss
+        self.screen = screen
+        # Adjust the width and height as needed
+        self.health_bar_width = 400  # Wider health bar
+        self.health_bar_height = 50  # Taller health bar
+        # Position the health bar at the top of the screen
+        self.health_bar_position = (self.screen.get_width() // 2 - self.health_bar_width // 2, 10)
+        self.font = RingFont
+
+    def update(self):
+        # Calculate the current health fraction
+        health_fraction = self.boss.health / self.boss.max_health
+        # Calculate the width of the current health portion
+        current_health_width = self.health_bar_width * health_fraction
+
+        # Define colors
+        current_health_color = (0, 255, 0)  # Green for current health
+        missing_health_color = (255, 0, 0)  # Red for missing health
+        outline_color = (0, 0, 0)  # Black for outline
+
+        # Store information for later use in the draw method
+        self.current_health_width = current_health_width
+        self.health_fraction = health_fraction
+        self.current_health_color = current_health_color
+        self.missing_health_color = missing_health_color
+        self.outline_color = outline_color
+        
+    def draw(self):
+        # Draw the missing health portion (red)
+        pygame.draw.rect(
+            self.screen,
+            self.missing_health_color,
+            (self.health_bar_position[0] + self.current_health_width, self.health_bar_position[1],
+             self.health_bar_width - self.current_health_width, self.health_bar_height)
+        )
+        
+        # Draw the current health portion (green)
+        pygame.draw.rect(
+            self.screen,
+            self.current_health_color,
+            (self.health_bar_position[0], self.health_bar_position[1],
+             self.current_health_width, self.health_bar_height)
+        )
+
+        # Draw the outline of the health bar (black)
+        pygame.draw.rect(
+            self.screen,
+            self.outline_color,
+            (self.health_bar_position[0], self.health_bar_position[1],
+             self.health_bar_width, self.health_bar_height),
+            2  # Line width for the outline
+        )
+
+        # Draw the label "RANDOM AHH ROBOT" inside the health bar
+        label_text = "RANDOM AHH ROBOT"
+        label_color = (255, 255, 255)  # White color for the label text
+        label_surface = self.font.render(label_text, True, label_color)
+        label_position = (self.health_bar_position[0] + self.health_bar_width // 2 - label_surface.get_width() // 2, self.health_bar_position[1] + self.health_bar_height // 2 - label_surface.get_height() // 2)
+        self.screen.blit(label_surface, label_position)

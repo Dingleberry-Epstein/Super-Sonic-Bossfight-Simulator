@@ -6,6 +6,8 @@ from pytmx.util_pygame import *
 pygame.init()
 pygame.display.set_mode((1280, 720))
 
+clock = pygame.time.Clock()
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
@@ -27,6 +29,38 @@ class Camera:
         x = -target.rect.centerx + int(self.width / 2)
         y = -target.rect.centery + int(self.height / 2)
         self.camera = pygame.Rect(x, y, self.width, self.height)
+
+def fade_in_out(image, duration):
+    alpha = 0
+    scaled_image = pygame.transform.scale(image, (int(image.get_width() * 0.33), int(image.get_height() * 0.33)))
+    image_rect = scaled_image.get_rect(center=screen.get_rect().center)
+
+    # Set the background color
+    background_color = (255, 255, 255)
+    screen.fill(background_color)
+    pygame.display.flip()
+    clock.tick(60)  # Adjust the frame rate as needed 
+
+    # Fade in
+    while alpha < 255:
+        alpha += 5  # Adjust the speed of the fade-in
+        scaled_image.set_alpha(alpha)
+        screen.fill(background_color)  # Clear the screen with the background color
+        screen.blit(scaled_image, image_rect)
+        pygame.display.flip()
+        clock.tick(60)  # Adjust the frame rate as needed
+
+    # Hold the image for the specified duration
+    pygame.time.wait(duration * 1000)  # Convert seconds to milliseconds
+
+    # Fade out
+    while alpha > 0:
+        alpha -= 5  # Adjust the speed of the fade-out
+        scaled_image.set_alpha(alpha)
+        screen.fill(background_color)  # Clear the screen with the background color
+        screen.blit(scaled_image, image_rect)
+        pygame.display.flip()
+        clock.tick(60)  # Adjust the frame rate as needed
 
 def scene_fade_in(screen, clock, image, duration, background_color=(255, 255, 255)):
     """
