@@ -6,3 +6,5 @@ My tip to you is to use another engine for a Sonic game, preferably Godot or Gam
 I don't really care much about what happens to my code so feel free to use any of it, but please, credit me if you do use any of it.
 
 # The original Sonic code has been commented out, so if you uncomment the Sonic class and the EggmanLand class, you can reprogram the game to run using those. If you do get angled movement working, let me know.
+
+# Also if you get an error regarding PyTMX, install it with "pip install pytmx" in the terminal/command prompt.
